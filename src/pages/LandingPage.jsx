@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import './LandingPage.css';
 
 const LandingPage = () => {
-  const { user, login, signup } = useAuth();
+  const { user, login, startSignup } = useAuth();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   
@@ -19,13 +19,20 @@ const LandingPage = () => {
   const [mobile, setMobile] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && user.emailVerified) {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (designation === 'Non-Teaching Staff') {
+      setDepartment('');
+    }
+  }, [designation]);
 
   const getErrorMessage = (error) => {
     switch (error.code) {
@@ -40,25 +47,61 @@ const LandingPage = () => {
     }
   };
 
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (!firstName || !lastName || !email || !password || !mobile) {
+      setError('Please fill all required fields before verifying.');
+      return;
+    }
+
+    if (designation !== 'Non-Teaching Staff' && !department) {
+      setError('Please select a department.');
+      return;
+    }
+
+    if (designation === 'Student' && (!year || !registerNumber)) {
+      setError('Please select a year and enter your register number.');
+      return;
+    }
+
+    setLoading(true);
+
+    const profileData = {
+      firstName,
+      lastName,
+      designation,
+      department: designation === 'Non-Teaching Staff' ? null : department,
+      year: designation === 'Student' ? year : null,
+      registerNumber: designation === 'Student' ? registerNumber : null,
+      mobile,
+      email
+    };
+
+    try {
+      await startSignup(email, password, profileData);
+      window.localStorage.setItem('pendingSignupData', JSON.stringify(profileData));
+      setMessage('Verification email sent! Check your inbox or spam folder, then click the link to continue.');
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
-    
+
     try {
       if (isLogin) {
         await login(email, password);
       } else {
-        await signup(email, password, {
-          firstName,
-          lastName,
-          designation,
-          department,
-          year: designation === 'Student' ? year : null,
-          registerNumber: designation === 'Student' ? registerNumber : null,
-          mobile
-        });
-        alert('Account created successfully! Please check your email for a verification link.');
+        setError('Please use the Verify Email button to start the signup process.');
       }
     } catch (err) {
       setError(getErrorMessage(err));
@@ -110,16 +153,18 @@ const LandingPage = () => {
                   <option value="Non-Teaching Staff">Non-Teaching Staff</option>
                 </select>
 
-                <select value={department} onChange={(e) => setDepartment(e.target.value)} required>
-                  <option value="" disabled>Select Department</option>
-                  <option value="CSE">CSE</option>
-                  <option value="Civil">Civil</option>
-                  <option value="Mechanical">Mechanical</option>
-                  <option value="ECE">ECE</option>
-                  <option value="EEE">EEE</option>
-                  <option value="AIDS">AIDS</option>
-                  <option value="IT">IT</option>
-                </select>
+                {designation !== 'Non-Teaching Staff' && (
+                  <select value={department} onChange={(e) => setDepartment(e.target.value)} required>
+                    <option value="" disabled>Select Department</option>
+                    <option value="CSE">CSE</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="AIDS">AIDS</option>
+                    <option value="IT">IT</option>
+                  </select>
+                )}
 
                 {designation === 'Student' && (
                   <div className="form-row">
@@ -163,10 +208,25 @@ const LandingPage = () => {
                 {showPassword ? "👁️‍🗨️" : "👁️"}
               </button>
             </div>
-            
-            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-              {loading ? 'Processing...' : (isLogin ? 'Log In' : 'Create Account')}
-            </button>
+
+            {message && <p className="auth-success" style={{color: 'green', marginTop: '1rem'}}>{message}</p>}
+
+            {!isLogin && (
+              <button 
+                type="button" 
+                className="btn btn-secondary btn-block" 
+                onClick={handleVerify} 
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Send Verification Link'}
+              </button>
+            )}
+
+            {isLogin && (
+              <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                {loading ? 'Processing...' : 'Log In'}
+              </button>
+            )}
           </form>
         </div>
       </div>

@@ -60,6 +60,25 @@ body {
   animation: fadeIn 0.5s ease-out;
 }
 
+.profile-row-two-column {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-row-two-column > div {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .profile-row-two-column {
+    flex-direction: column;
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

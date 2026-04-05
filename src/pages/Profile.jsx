@@ -41,6 +41,14 @@ const Profile = () => {
     fetchProfile();
   }, [user]);
 
+  if (loading) {
+    return (
+      <div className="glass" style={{padding: '3rem', maxWidth: '400px', margin: '2rem auto', textAlign: 'center'}}>
+        <h2>Loading profile...</h2>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="glass" style={{padding: '3rem', maxWidth: '400px', margin: '2rem auto', textAlign: 'center'}}>
@@ -173,7 +181,7 @@ const Profile = () => {
             </>
           ) : (
             <div style={{display: 'flex', flexDirection: 'column'}}>
-              <div style={{display: 'flex', gap: '10px'}}>
+              <div className="profile-row-two-column" style={{display: 'flex', gap: '10px'}}>
                 <div style={{flex: 1}}>
                   <label>First Name</label>
                   <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleChange} style={inputStyle} />
@@ -196,7 +204,7 @@ const Profile = () => {
               </select>
 
               {profileData?.designation === 'Student' && (
-                <div style={{display: 'flex', gap: '10px'}}>
+                <div className="profile-row-two-column" style={{display: 'flex', gap: '10px'}}>
                   <div style={{flex: 1}}>
                     <label>Year</label>
                     <select name="year" value={formData.year || ''} onChange={handleChange} style={inputStyle}>
