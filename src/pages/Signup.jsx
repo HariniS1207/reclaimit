@@ -58,7 +58,10 @@ const Signup = () => {
       );
 
       // Send verification email
-     await sendEmailVerification(auth.currentUser);
+     await sendEmailVerification(auth.currentUser, {
+  url: "https://reclaimitweb.vercel.app/signup",
+  handleCodeInApp: true
+});
 
       setMessage("Verification email sent 📩 Check your inbox");
 
