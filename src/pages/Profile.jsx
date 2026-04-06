@@ -107,10 +107,45 @@ const Profile = () => {
     }
   };
 
-  const inputStyle = { padding: '10px', width: '100%', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' };
+  const fieldStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    borderRadius: '12px',
+    border: '1px solid #ccc',
+    fontSize: '1rem',
+    lineHeight: '1.4',
+    boxSizing: 'border-box',
+    minHeight: '48px',
+    background: 'white',
+  };
+
+  const labelStyle = {
+    marginBottom: '8px',
+    fontWeight: '600',
+    color: '#111',
+  };
 
   return (
     <div className="glass" style={{padding: '3rem', maxWidth: '500px', margin: '2rem auto', textAlign: 'left'}}>
+      <style>{`
+        .profile-form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .profile-field-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        @media (max-width: 767px) {
+          .profile-form-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
       <div style={{textAlign: 'center', marginBottom: '2rem'}}>
         <div style={{position: 'relative', display: 'inline-block'}}>
           {profileData?.profileUrl ? (
@@ -180,51 +215,48 @@ const Profile = () => {
               </div>
             </>
           ) : (
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              <div className="profile-row-two-column" style={{display: 'flex', gap: '10px'}}>
-                <div style={{flex: 1}}>
-                  <label>First Name</label>
-                  <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleChange} style={inputStyle} />
-                </div>
-                <div style={{flex: 1}}>
-                  <label>Last Name</label>
-                  <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleChange} style={inputStyle} />
-                </div>
+            <div className="profile-form-grid">
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>First Name</label>
+                <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleChange} style={fieldStyle} />
+              </div>
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>Last Name</label>
+                <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleChange} style={fieldStyle} />
               </div>
 
-              <label>Department</label>
-              <select name="department" value={formData.department || ''} onChange={handleChange} style={inputStyle}>
-                <option value="CSE">CSE</option>
-                <option value="Civil">Civil</option>
-                <option value="Mechanical">Mechanical</option>
-                <option value="ECE">ECE</option>
-                <option value="EEE">EEE</option>
-                <option value="AIDS">AIDS</option>
-                <option value="IT">IT</option>
-              </select>
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>Department</label>
+                <select name="department" value={formData.department || ''} onChange={handleChange} style={fieldStyle}>
+                  <option value="CSE">CSE</option>
+                  <option value="Civil">Civil</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="ECE">ECE</option>
+                  <option value="EEE">EEE</option>
+                  <option value="AIDS">AIDS</option>
+                  <option value="IT">IT</option>
+                </select>
+              </div>
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>Year</label>
+                <select name="year" value={formData.year || ''} onChange={handleChange} style={fieldStyle}>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                </select>
+              </div>
 
-              {profileData?.designation === 'Student' && (
-                <div className="profile-row-two-column" style={{display: 'flex', gap: '10px'}}>
-                  <div style={{flex: 1}}>
-                    <label>Year</label>
-                    <select name="year" value={formData.year || ''} onChange={handleChange} style={inputStyle}>
-                      <option value="I">I</option>
-                      <option value="II">II</option>
-                      <option value="III">III</option>
-                      <option value="IV">IV</option>
-                    </select>
-                  </div>
-                  <div style={{flex: 1}}>
-                    <label>Register Number</label>
-                    <input type="text" name="registerNumber" value={formData.registerNumber || ''} onChange={handleChange} style={inputStyle} />
-                  </div>
-                </div>
-              )}
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>Register Number</label>
+                <input type="text" name="registerNumber" value={formData.registerNumber || ''} onChange={handleChange} style={fieldStyle} />
+              </div>
+              <div className="profile-field-wrapper">
+                <label style={labelStyle}>Mobile Number</label>
+                <input type="tel" name="mobile" value={formData.mobile || ''} onChange={handleChange} style={fieldStyle} />
+              </div>
 
-              <label>Mobile Number</label>
-              <input type="tel" name="mobile" value={formData.mobile || ''} onChange={handleChange} style={inputStyle} />
-
-              <div style={{display: 'flex', gap: '10px', marginTop: '1rem'}}>
+              <div style={{gridColumn: '1 / -1', display: 'flex', gap: '10px', marginTop: '1rem'}}>
                 <button className="btn btn-primary" style={{flex: 1}} onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
                 <button className="btn btn-secondary" style={{flex: 1, backgroundColor: '#ccc', border: 'none', borderRadius: '20px'}} onClick={() => { setIsEditing(false); }}>Cancel</button>
               </div>
